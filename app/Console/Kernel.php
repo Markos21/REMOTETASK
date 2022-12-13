@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use App\Models\Data;
 
 class Kernel extends ConsoleKernel
 {
@@ -15,7 +16,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $from= Carbon::now()->subDays(30)->toDateString();
+        $current = Carbon::now()->toDateString();
+
+        $schedule->call(function () {
+            Data::whereBetween('created_at', array($diff,$current))
+            ->delete();
+        })->hourly();
     }
 
     /**
